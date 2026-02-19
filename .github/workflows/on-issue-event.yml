@@ -8,7 +8,7 @@ on:
 
 jobs:
   lunch-suggestion:
-    if: github.actor != 'github-actions[bot]'
+    if: github.actor == github.repository_owner
     uses: ./.github/workflows/run-slm-comment.yml
     with:
       model_repo: "TheBloke/TinyLlama-1.1B-Chat-v1.0-GGUF"
