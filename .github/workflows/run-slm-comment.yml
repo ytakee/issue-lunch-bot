@@ -58,13 +58,15 @@ jobs:
         run: |
           set -euo pipefail
           DELIMITER=$(openssl rand -hex 16)
-          echo "comment<<$DELIMITER" >> $GITHUB_OUTPUT
-          echo "$ISSUE_BODY" | .venv/bin/python -m src \
-            --model-path ./models/${{ inputs.model_file }} \
-            --system-prompt "$SYSTEM_PROMPT" \
-            --max-tokens ${{ inputs.max_tokens }} \
-            --n-threads 4 >> $GITHUB_OUTPUT
-          echo "$DELIMITER" >> $GITHUB_OUTPUT
+          {
+            echo "comment<<$DELIMITER"
+            echo "$ISSUE_BODY" | .venv/bin/python -m src \
+              --model-path "./models/${{ inputs.model_file }}" \
+              --system-prompt "$SYSTEM_PROMPT" \
+              --max-tokens "${{ inputs.max_tokens }}" \
+              --n-threads 4
+            echo "$DELIMITER"
+          } >> "$GITHUB_OUTPUT"
         env:
           ISSUE_BODY: ${{ inputs.issue_body }}
           SYSTEM_PROMPT: ${{ inputs.system_prompt }}
