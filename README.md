@@ -170,3 +170,31 @@ jobs:
 | [actionlint](https://github.com/rhysd/actionlint) | ワークフローYAMLの静的解析 |
 | pytest | テスト |
 | [Dependabot](https://docs.github.com/ja/code-security/dependabot) | 依存の自動更新 |
+
+## ライセンス
+
+本リポジトリのコードは MIT License。詳細は `LICENSE` を参照。
+
+## サードパーティライセンス
+
+本プロジェクトはモデルファイルを同梱せず、実行時に外部からダウンロードする。
+利用時は各モデル・ツールのライセンスに従うこと。
+
+### モデル（ワークフローで利用）
+
+- [Qwen2.5 1.5B Instruct GGUF](https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct-GGUF) - Apache-2.0 ([LICENSE](https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct-GGUF/blob/main/LICENSE))
+- [Qwen2.5 3B Instruct GGUF](https://huggingface.co/Qwen/Qwen2.5-3B-Instruct-GGUF) - Qwen Research License ([LICENSE](https://huggingface.co/Qwen/Qwen2.5-3B-Instruct-GGUF/blob/main/LICENSE))
+- [Qwen2.5 7B Instruct GGUF](https://huggingface.co/Qwen/Qwen2.5-7B-Instruct-GGUF) - Apache-2.0 ([LICENSE](https://huggingface.co/Qwen/Qwen2.5-7B-Instruct-GGUF/blob/main/LICENSE))
+- [Gemma 2 2B IT GGUF](https://huggingface.co/bartowski/gemma-2-2b-it-GGUF) - Gemma License ([Terms](https://ai.google.dev/gemma/terms))
+- [ELYZA Japanese Llama 2 7B Instruct GGUF](https://huggingface.co/mmnga/ELYZA-japanese-Llama-2-7b-instruct-gguf) - Llama 2 License ([License](https://ai.meta.com/llama/license/))
+- [rinna Japanese GPT-NeoX 3.6B Instruction PPO GGUF](https://huggingface.co/mmnga/rinna-japanese-gpt-neox-3.6b-instruction-ppo-gguf) - MIT (license tag in model card)
+- [LINE Japanese Large LM 1.7B Instruction SFT GGUF](https://huggingface.co/mmnga/line-corp-japanese-large-lm-1.7b-instruction-sft-gguf) - Apache-2.0 (license tag in model card)
+- [Japanese StableLM 3B 4e1t Instruct GGUF](https://huggingface.co/mmnga/japanese-stablelm-3b-4e1t-instruct-gguf) - Apache-2.0 (license tag in model card)
+
+### ライブラリ / ツール
+
+- [llama-cpp-python](https://github.com/abetlen/llama-cpp-python) - MIT
+- [huggingface-hub](https://github.com/huggingface/huggingface_hub) - Apache-2.0 (`hf download` で使用)
+- [uv](https://github.com/astral-sh/uv) - Apache-2.0 (Actionsで使用)
+
+開発用依存は `requirements-dev.txt` と各プロジェクトのLICENSEを参照。
