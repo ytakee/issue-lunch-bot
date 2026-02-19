@@ -2,13 +2,18 @@ import pytest
 from unittest.mock import MagicMock, patch
 
 from src.main import main
+from src.model_config import ModelSettings
 
 
+@patch("src.main.resolve_model_settings")
 @patch("src.main.generate", return_value="ラーメンがおすすめです！")
 @patch("src.main.load_model")
-def test_main_prints_result(mock_load_model, mock_generate, capsys):
+def test_main_prints_result(
+    mock_load_model, mock_generate, mock_resolve_model_settings, capsys
+):
     mock_llm = MagicMock()
     mock_load_model.return_value = mock_llm
+    mock_resolve_model_settings.return_value = ModelSettings()
 
     test_args = [
         "main.py",
@@ -34,7 +39,16 @@ def test_main_prints_result(mock_load_model, mock_generate, capsys):
         "./models/test.gguf", n_ctx=256, n_threads=2, n_batch=64
     )
     mock_generate.assert_called_once_with(
-        mock_llm, "テスト用プロンプト", "お腹すいた", 128, 1.2
+        mock_llm,
+        "テスト用プロンプト",
+        "お腹すいた",
+        128,
+        1.2,
+        supports_system=True,
+        chat_format=None,
+    )
+    mock_resolve_model_settings.assert_called_once_with(
+        "./models/test.gguf", "models.toml"
     )
 
     captured = capsys.readouterr()

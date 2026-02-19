@@ -5,6 +5,7 @@ import sys
 
 from src.model import load_model
 from src.inference import generate
+from src.model_config import resolve_model_settings
 
 
 def main():
@@ -16,6 +17,7 @@ def main():
     parser.add_argument("--n-threads", type=int, default=4)
     parser.add_argument("--n-batch", type=int, default=512)
     parser.add_argument("--repeat-penalty", type=float, default=1.2)
+    parser.add_argument("--model-config", default="models.toml")
     args = parser.parse_args()
 
     user_input = sys.stdin.read().strip()
@@ -23,6 +25,7 @@ def main():
         print("Error: no input provided via stdin", file=sys.stderr)
         sys.exit(1)
 
+    settings = resolve_model_settings(args.model_path, args.model_config)
     llm = load_model(
         args.model_path,
         n_ctx=args.n_ctx,
@@ -30,6 +33,12 @@ def main():
         n_batch=args.n_batch,
     )
     result = generate(
-        llm, args.system_prompt, user_input, args.max_tokens, args.repeat_penalty
+        llm,
+        args.system_prompt,
+        user_input,
+        args.max_tokens,
+        args.repeat_penalty,
+        supports_system=settings.supports_system,
+        chat_format=settings.chat_format,
     )
     print(result)

@@ -58,6 +58,21 @@ jobs:
         if: steps.cache-model.outputs.cache-hit != 'true'
         run: uv tool run --from huggingface-hub hf download ${{ inputs.model_repo }} ${{ inputs.model_file }} --local-dir ./models
 
+      - name: Validate model file
+        run: |
+          .venv/bin/python - <<'PY'
+          from pathlib import Path
+
+          model_path = Path("./models/${{ inputs.model_file }}")
+          if not model_path.is_file():
+              raise SystemExit(f"Model file not found: {model_path}")
+
+          with model_path.open("rb") as f:
+              magic = f.read(4)
+          if magic != b"GGUF":
+              raise SystemExit(f"Invalid GGUF header: {model_path}")
+          PY
+
       - name: Run inference
         id: inference
         shell: bash

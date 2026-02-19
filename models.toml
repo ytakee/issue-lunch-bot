@@ -1,0 +1,5 @@
+[defaults]
+supports_system = true
+
+[models."gemma-2-2b-it-Q4_K_M.gguf"]
+supports_system = false

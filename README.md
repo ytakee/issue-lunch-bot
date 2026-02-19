@@ -60,7 +60,8 @@ issue-lunch-bot/
 │   ├── test_inference.py
 │   └── test_main.py
 ├── requirements.txt                # llama-cpp-python
-└── requirements-dev.txt            # pytest, ruff
+├── requirements-dev.txt            # pytest, ruff
+└── models.toml                     # モデルごとのチャット設定
 ```
 
 ## CPU高速化
@@ -118,6 +119,19 @@ model_repo: "TheBloke/Mistral-7B-Instruct-v0.2-GGUF"
 model_file: "mistral-7b-instruct-v0.2.Q4_K_M.gguf"
 ```
 
+### モデル互換性設定
+
+`models.toml` でモデルごとのチャット仕様を定義する。
+`supports_system = false` の場合、`system_prompt` は `user` メッセージに統合して送信する。
+
+```toml
+[defaults]
+supports_system = true
+
+[models."gemma-2-2b-it-Q4_K_M.gguf"]
+supports_system = false
+```
+
 ### 日本語に強いモデル例（GGUF）
 
 以下は日本語対応が明記されているモデルのGGUF版。`on-issue-event.yml` に追加済み。
@@ -125,9 +139,6 @@ model_file: "mistral-7b-instruct-v0.2.Q4_K_M.gguf"
 - [ELYZA Japanese Llama 2 7B Instruct](https://huggingface.co/mmnga/ELYZA-japanese-Llama-2-7b-instruct-gguf)
   - `model_repo`: `mmnga/ELYZA-japanese-Llama-2-7b-instruct-gguf`
   - `model_file`: `ELYZA-japanese-Llama-2-7b-instruct-q4_K_M.gguf`
-- [rinna Japanese GPT-NeoX 3.6B Instruction PPO](https://huggingface.co/mmnga/rinna-japanese-gpt-neox-3.6b-instruction-ppo-gguf)
-  - `model_repo`: `mmnga/rinna-japanese-gpt-neox-3.6b-instruction-ppo-gguf`
-  - `model_file`: `rinna-japanese-gpt-neox-3.6b-instruction-ppo-q4_1.gguf`
 - [LINE Japanese Large LM 1.7B Instruction SFT](https://huggingface.co/mmnga/line-corp-japanese-large-lm-1.7b-instruction-sft-gguf)
   - `model_repo`: `mmnga/line-corp-japanese-large-lm-1.7b-instruction-sft-gguf`
   - `model_file`: `line-corp-japanese-large-lm-1.7b-instruction-sft-q4_K_M.gguf`
@@ -187,7 +198,6 @@ jobs:
 - [Qwen2.5 7B Instruct GGUF](https://huggingface.co/Qwen/Qwen2.5-7B-Instruct-GGUF) - Apache-2.0 ([LICENSE](https://huggingface.co/Qwen/Qwen2.5-7B-Instruct-GGUF/blob/main/LICENSE))
 - [Gemma 2 2B IT GGUF](https://huggingface.co/bartowski/gemma-2-2b-it-GGUF) - Gemma License ([Terms](https://ai.google.dev/gemma/terms))
 - [ELYZA Japanese Llama 2 7B Instruct GGUF](https://huggingface.co/mmnga/ELYZA-japanese-Llama-2-7b-instruct-gguf) - Llama 2 License ([License](https://ai.meta.com/llama/license/))
-- [rinna Japanese GPT-NeoX 3.6B Instruction PPO GGUF](https://huggingface.co/mmnga/rinna-japanese-gpt-neox-3.6b-instruction-ppo-gguf) - MIT (license tag in model card)
 - [LINE Japanese Large LM 1.7B Instruction SFT GGUF](https://huggingface.co/mmnga/line-corp-japanese-large-lm-1.7b-instruction-sft-gguf) - Apache-2.0 (license tag in model card)
 - [Japanese StableLM 3B 4e1t Instruct GGUF](https://huggingface.co/mmnga/japanese-stablelm-3b-4e1t-instruct-gguf) - Apache-2.0 (license tag in model card)
 
