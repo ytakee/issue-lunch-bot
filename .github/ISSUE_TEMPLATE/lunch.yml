@@ -1,0 +1,38 @@
+name: "今日のお昼ご飯"
+description: "気分を伝えると、お昼ご飯を提案してもらえます"
+title: "お昼ご飯の相談"
+labels: ["lunch"]
+body:
+  - type: dropdown
+    id: mood
+    attributes:
+      label: 今の気分は？
+      options:
+        - がっつり食べたい
+        - さっぱりしたい
+        - あったかいものが食べたい
+        - 冷たいものが食べたい
+        - なんでもいい
+    validations:
+      required: true
+
+  - type: dropdown
+    id: budget
+    attributes:
+      label: 予算は？
+      options:
+        - ~500円
+        - ~1,000円
+        - ~1,500円
+        - 気にしない
+    validations:
+      required: false
+
+  - type: textarea
+    id: details
+    attributes:
+      label: ひとこと（任意）
+      description: 他に伝えたいことがあれば
+      placeholder: "例: 昨日カレー食べたから別のがいいな"
+    validations:
+      required: false
