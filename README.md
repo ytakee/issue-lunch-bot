@@ -43,19 +43,23 @@ PythonがGitHub APIを知らないため、ローカルでの単体テストやC
 
 ```
 issue-lunch-bot/
-├── .github/workflows/
-│   ├── on-issue-event.yml      # Caller: イベントトリガー
-│   ├── run-slm-comment.yml     # Reusable: モデルDL → 推論 → コメント投稿
-│   └── ci.yml                  # CI: lint + test
+├── .github/
+│   ├── ISSUE_TEMPLATE/
+│   │   └── lunch.yml               # Issueテンプレート（気分・予算を選択式で入力）
+│   └── workflows/
+│       ├── on-issue-event.yml      # Caller: イベントトリガー
+│       ├── run-slm-comment.yml     # Reusable: モデルDL → 推論 → コメント投稿
+│       └── ci.yml                  # CI: actionlint + ruff + pytest
 ├── src/
-│   ├── model.py                # モデルのロード・設定
-│   ├── inference.py            # プロンプト構築 + 推論実行
-│   └── main.py                 # CLIエントリポイント (stdin → stdout)
+│   ├── __main__.py                 # python -m src のエントリポイント
+│   ├── model.py                    # モデルのロード・設定
+│   ├── inference.py                # プロンプト構築 + 推論実行
+│   └── main.py                     # CLI本体 (stdin → stdout)
 ├── tests/
 │   ├── test_inference.py
 │   └── test_main.py
-├── requirements.txt            # llama-cpp-python
-└── requirements-dev.txt        # pytest, ruff
+├── requirements.txt                # llama-cpp-python
+└── requirements-dev.txt            # pytest, ruff
 ```
 
 ## CPU高速化
