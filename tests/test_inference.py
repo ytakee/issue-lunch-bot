@@ -26,10 +26,11 @@ def test_generate_returns_content():
             {"role": "user", "content": "今日は暑い"},
         ],
         max_tokens=128,
+        repeat_penalty=1.2,
     )
 
 
-def test_generate_uses_default_max_tokens():
+def test_generate_uses_defaults():
     mock_llm = MagicMock()
     mock_llm.create_chat_completion.return_value = {
         "choices": [{"message": {"content": "おすすめです"}}]
@@ -39,3 +40,4 @@ def test_generate_uses_default_max_tokens():
 
     call_kwargs = mock_llm.create_chat_completion.call_args
     assert call_kwargs.kwargs["max_tokens"] == 256
+    assert call_kwargs.kwargs["repeat_penalty"] == 1.2

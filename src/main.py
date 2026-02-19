@@ -15,6 +15,7 @@ def main():
     parser.add_argument("--n-ctx", type=int, default=512)
     parser.add_argument("--n-threads", type=int, default=4)
     parser.add_argument("--n-batch", type=int, default=512)
+    parser.add_argument("--repeat-penalty", type=float, default=1.2)
     args = parser.parse_args()
 
     user_input = sys.stdin.read().strip()
@@ -28,5 +29,7 @@ def main():
         n_threads=args.n_threads,
         n_batch=args.n_batch,
     )
-    result = generate(llm, args.system_prompt, user_input, args.max_tokens)
+    result = generate(
+        llm, args.system_prompt, user_input, args.max_tokens, args.repeat_penalty
+    )
     print(result)

@@ -70,7 +70,7 @@ GitHub Actions無料ランナー（4 vCPU / 16GB RAM）で実用的な速度を�
 
 | 項目 | 値 | 理由 |
 |---|---|---|
-| 量子化 | Q2_K | モデルサイズ半減（約400MB）、メモリ帯域がボトルネックのCPU環境で有効 |
+| 量子化 | Q4_K_M | 品質と速度のバランスが良い。3Bモデルで約2.1GB |
 | `n_ctx` | 512 | ランチ提案に長いコンテキストは不要。メモリ確保量を抑え初期化を高速化 |
 | `max_tokens` | 256 | 出力長を用途に合わせて絞り、生成時間を短縮 |
 
@@ -144,7 +144,7 @@ jobs:
 | 技術 | 用途 |
 |---|---|
 | [llama-cpp-python](https://github.com/abetlen/llama-cpp-python) | GGUFモデルの推論 |
-| [TinyLlama 1.1B](https://huggingface.co/TheBloke/TinyLlama-1.1B-Chat-v1.0-GGUF) | デフォルトのSLM |
+| [Qwen2.5 3B Instruct](https://huggingface.co/Qwen/Qwen2.5-3B-Instruct-GGUF) | デフォルトのSLM（日本語対応） |
 | GitHub Actions | ワークフロー実行基盤 |
 | [uv](https://github.com/astral-sh/uv) | パッケージ管理 |
 | [ruff](https://github.com/astral-sh/ruff) | Lint / Format |
