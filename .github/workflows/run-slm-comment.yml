@@ -3,6 +3,10 @@ name: Run SLM and Comment
 on:
   workflow_call:
     inputs:
+      bot_name:
+        type: string
+        description: "コメントに表示するBot名"
+        default: "SLM Bot"
       model_repo:
         type: string
         description: "HuggingFace repo (e.g. Qwen/Qwen2.5-3B-Instruct-GGUF)"
@@ -74,10 +78,17 @@ jobs:
           SYSTEM_PROMPT: ${{ inputs.system_prompt }}
 
       - name: Post comment to issue
+        shell: bash
         run: |
-          echo "$COMMENT_BODY" | gh issue comment ${{ inputs.issue_number }} \
+          {
+            echo "**$BOT_NAME** ($MODEL_FILE)"
+            echo ""
+            echo "$COMMENT_BODY"
+          } | gh issue comment ${{ inputs.issue_number }} \
             --repo ${{ github.repository }} \
             --body-file -
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BOT_NAME: ${{ inputs.bot_name }}
+          MODEL_FILE: ${{ inputs.model_file }}
           COMMENT_BODY: ${{ steps.inference.outputs.comment }}

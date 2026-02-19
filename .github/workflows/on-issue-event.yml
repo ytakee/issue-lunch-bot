@@ -12,13 +12,56 @@ permissions:
 jobs:
   lunch-suggestion:
     if: github.actor == github.repository_owner
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - bot_name: "Qwen 1.5B"
+            model_repo: "Qwen/Qwen2.5-1.5B-Instruct-GGUF"
+            model_file: "qwen2.5-1.5b-instruct-q4_k_m.gguf"
+            system_prompt: >
+              あなたはお昼ご飯アドバイザーです。
+              ユーザーのissue内容を読んで、気分に合ったお昼ご飯を1つ提案してください。
+              提案は簡潔に、料理名と一言コメントで返してください。
+
+          - bot_name: "Qwen 3B"
+            model_repo: "Qwen/Qwen2.5-3B-Instruct-GGUF"
+            model_file: "qwen2.5-3b-instruct-q4_k_m.gguf"
+            system_prompt: >
+              あなたはお昼ご飯アドバイザーです。
+              ユーザーのissue内容を読んで、気分に合ったお昼ご飯を1つ提案してください。
+              提案は簡潔に、料理名と一言コメントで返してください。
+
+          - bot_name: "Qwen 7B"
+            model_repo: "Qwen/Qwen2.5-7B-Instruct-GGUF"
+            model_file: "qwen2.5-7b-instruct-q3_k_m.gguf"
+            system_prompt: >
+              あなたはお昼ご飯アドバイザーです。
+              ユーザーのissue内容を読んで、気分に合ったお昼ご飯を1つ提案してください。
+              提案は簡潔に、料理名と一言コメントで返してください。
+
+          - bot_name: "Qwen 3B (ヘルシー志向)"
+            model_repo: "Qwen/Qwen2.5-3B-Instruct-GGUF"
+            model_file: "qwen2.5-3b-instruct-q4_k_m.gguf"
+            system_prompt: >
+              あなたは健康志向のお昼ご飯アドバイザーです。
+              ユーザーのissue内容を読んで、栄養バランスやカロリーを意識した
+              ヘルシーなお昼ご飯を1つ提案してください。
+              提案は簡潔に、料理名とおすすめポイントで返してください。
+
+          - bot_name: "Gemma 2 2B"
+            model_repo: "bartowski/gemma-2-2b-it-GGUF"
+            model_file: "gemma-2-2b-it-Q4_K_M.gguf"
+            system_prompt: >
+              あなたはお昼ご飯アドバイザーです。
+              ユーザーのissue内容を読んで、気分に合ったお昼ご飯を1つ提案してください。
+              提案は簡潔に、料理名と一言コメントで返してください。
+
     uses: ./.github/workflows/run-slm-comment.yml
     with:
-      model_repo: "Qwen/Qwen2.5-3B-Instruct-GGUF"
-      model_file: "qwen2.5-3b-instruct-q4_k_m.gguf"
-      system_prompt: |
-        あなたはお昼ご飯アドバイザーです。
-        ユーザーのissue内容を読んで、気分に合ったお昼ご飯を1つ提案してください。
-        提案は簡潔に、料理名と一言コメントで返してください。
+      bot_name: ${{ matrix.bot_name }}
+      model_repo: ${{ matrix.model_repo }}
+      model_file: ${{ matrix.model_file }}
+      system_prompt: ${{ matrix.system_prompt }}
       issue_number: ${{ github.event.issue.number }}
       issue_body: ${{ github.event.comment.body || github.event.issue.body }}
