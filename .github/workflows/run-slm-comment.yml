@@ -50,9 +50,7 @@ jobs:
 
       - name: Download model from HuggingFace
         if: steps.cache-model.outputs.cache-hit != 'true'
-        run: |
-          uv pip install huggingface-hub
-          .venv/bin/huggingface-cli download ${{ inputs.model_repo }} ${{ inputs.model_file }} --local-dir ./models
+        run: uv tool run --from huggingface-hub huggingface-cli download ${{ inputs.model_repo }} ${{ inputs.model_file }} --local-dir ./models
 
       - name: Run inference
         id: inference
