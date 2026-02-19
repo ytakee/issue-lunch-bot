@@ -57,6 +57,38 @@ jobs:
               ユーザーのissue内容を読んで、気分に合ったお昼ご飯を1つ提案してください。
               提案は簡潔に、料理名と一言コメントで返してください。
 
+          - bot_name: "ELYZA Llama2 7B"
+            model_repo: "mmnga/ELYZA-japanese-Llama-2-7b-instruct-gguf"
+            model_file: "ELYZA-japanese-Llama-2-7b-instruct-q4_K_M.gguf"
+            system_prompt: >
+              あなたはお昼ご飯アドバイザーです。
+              ユーザーのissue内容を読んで、気分に合ったお昼ご飯を1つ提案してください。
+              提案は簡潔に、料理名と一言コメントで返してください。
+
+          - bot_name: "rinna GPT-NeoX 3.6B"
+            model_repo: "mmnga/rinna-japanese-gpt-neox-3.6b-instruction-ppo-gguf"
+            model_file: "rinna-japanese-gpt-neox-3.6b-instruction-ppo-q4_1.gguf"
+            system_prompt: >
+              あなたはお昼ご飯アドバイザーです。
+              ユーザーのissue内容を読んで、気分に合ったお昼ご飯を1つ提案してください。
+              提案は簡潔に、料理名と一言コメントで返してください。
+
+          - bot_name: "LINE JLM 1.7B"
+            model_repo: "mmnga/line-corp-japanese-large-lm-1.7b-instruction-sft-gguf"
+            model_file: "line-corp-japanese-large-lm-1.7b-instruction-sft-q4_K_M.gguf"
+            system_prompt: >
+              あなたはお昼ご飯アドバイザーです。
+              ユーザーのissue内容を読んで、気分に合ったお昼ご飯を1つ提案してください。
+              提案は簡潔に、料理名と一言コメントで返してください。
+
+          - bot_name: "StableLM 3B JP"
+            model_repo: "mmnga/japanese-stablelm-3b-4e1t-instruct-gguf"
+            model_file: "japanese-stablelm-3b-4e1t-instruct-q4_K_M.gguf"
+            system_prompt: >
+              あなたはお昼ご飯アドバイザーです。
+              ユーザーのissue内容を読んで、気分に合ったお昼ご飯を1つ提案してください。
+              提案は簡潔に、料理名と一言コメントで返してください。
+
     uses: ./.github/workflows/run-slm-comment.yml
     with:
       bot_name: ${{ matrix.bot_name }}

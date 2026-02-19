@@ -118,6 +118,23 @@ model_repo: "TheBloke/Mistral-7B-Instruct-v0.2-GGUF"
 model_file: "mistral-7b-instruct-v0.2.Q4_K_M.gguf"
 ```
 
+### 日本語に強いモデル例（GGUF）
+
+以下は日本語対応が明記されているモデルのGGUF版。`on-issue-event.yml` に追加済み。
+
+- [ELYZA Japanese Llama 2 7B Instruct](https://huggingface.co/mmnga/ELYZA-japanese-Llama-2-7b-instruct-gguf)
+  - `model_repo`: `mmnga/ELYZA-japanese-Llama-2-7b-instruct-gguf`
+  - `model_file`: `ELYZA-japanese-Llama-2-7b-instruct-q4_K_M.gguf`
+- [rinna Japanese GPT-NeoX 3.6B Instruction PPO](https://huggingface.co/mmnga/rinna-japanese-gpt-neox-3.6b-instruction-ppo-gguf)
+  - `model_repo`: `mmnga/rinna-japanese-gpt-neox-3.6b-instruction-ppo-gguf`
+  - `model_file`: `rinna-japanese-gpt-neox-3.6b-instruction-ppo-q4_1.gguf`
+- [LINE Japanese Large LM 1.7B Instruction SFT](https://huggingface.co/mmnga/line-corp-japanese-large-lm-1.7b-instruction-sft-gguf)
+  - `model_repo`: `mmnga/line-corp-japanese-large-lm-1.7b-instruction-sft-gguf`
+  - `model_file`: `line-corp-japanese-large-lm-1.7b-instruction-sft-q4_K_M.gguf`
+- [Japanese StableLM 3B 4e1t Instruct](https://huggingface.co/mmnga/japanese-stablelm-3b-4e1t-instruct-gguf)
+  - `model_repo`: `mmnga/japanese-stablelm-3b-4e1t-instruct-gguf`
+  - `model_file`: `japanese-stablelm-3b-4e1t-instruct-q4_K_M.gguf`
+
 ### プロンプトを変更する
 
 `system_prompt` を書き換えるだけで用途を変えられる。
