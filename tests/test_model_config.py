@@ -1,5 +1,3 @@
-from pathlib import Path
-
 from src.model_config import ModelSettings, resolve_model_settings
 
 
