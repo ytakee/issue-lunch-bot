@@ -32,8 +32,10 @@ jobs:
 
       - uses: astral-sh/setup-uv@v5
 
-      - name: Install dependencies
-        run: uv pip install --system -r requirements.txt
+      - name: Set up venv and install dependencies
+        run: |
+          uv venv --python 3.12
+          uv pip install -r requirements.txt
         env:
           CMAKE_ARGS: "-DGGML_AVX2=ON -DGGML_FMA=ON -DGGML_F16C=ON"
 
@@ -47,8 +49,8 @@ jobs:
       - name: Download model from HuggingFace
         if: steps.cache-model.outputs.cache-hit != 'true'
         run: |
-          uv pip install --system huggingface-hub
-          huggingface-cli download ${{ inputs.model_repo }} ${{ inputs.model_file }} --local-dir ./models
+          uv pip install huggingface-hub
+          .venv/bin/huggingface-cli download ${{ inputs.model_repo }} ${{ inputs.model_file }} --local-dir ./models
 
       - name: Run inference
         id: inference
@@ -57,7 +59,7 @@ jobs:
           set -euo pipefail
           DELIMITER=$(openssl rand -hex 16)
           echo "comment<<$DELIMITER" >> $GITHUB_OUTPUT
-          echo "$ISSUE_BODY" | python -m src \
+          echo "$ISSUE_BODY" | .venv/bin/python -m src \
             --model-path ./models/${{ inputs.model_file }} \
             --system-prompt "$SYSTEM_PROMPT" \
             --max-tokens ${{ inputs.max_tokens }} \
