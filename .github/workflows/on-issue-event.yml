@@ -1,0 +1,21 @@
+name: Issue Lunch Bot
+
+on:
+  issues:
+    types: [opened]
+  issue_comment:
+    types: [created]
+
+jobs:
+  lunch-suggestion:
+    if: github.actor != 'github-actions[bot]'
+    uses: ./.github/workflows/run-slm-comment.yml
+    with:
+      model_repo: "TheBloke/TinyLlama-1.1B-Chat-v1.0-GGUF"
+      model_file: "tinyllama-1.1b-chat-v1.0.Q2_K.gguf"
+      system_prompt: |
+        あなたはお昼ご飯アドバイザーです。
+        ユーザーのissue内容を読んで、気分に合ったお昼ご飯を1つ提案してください。
+        提案は簡潔に、料理名と一言コメントで返してください。
+      issue_number: ${{ github.event.issue.number }}
+      issue_body: ${{ github.event.issue.body || github.event.comment.body }}

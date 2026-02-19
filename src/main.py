@@ -1,0 +1,32 @@
+"""標準入力からユーザーテキストを受け取り、生成結果を標準出力に出力"""
+
+import argparse
+import sys
+
+from src.model import load_model
+from src.inference import generate
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--model-path", required=True)
+    parser.add_argument("--system-prompt", required=True)
+    parser.add_argument("--max-tokens", type=int, default=256)
+    parser.add_argument("--n-ctx", type=int, default=512)
+    parser.add_argument("--n-threads", type=int, default=4)
+    parser.add_argument("--n-batch", type=int, default=512)
+    args = parser.parse_args()
+
+    user_input = sys.stdin.read().strip()
+    if not user_input:
+        print("Error: no input provided via stdin", file=sys.stderr)
+        sys.exit(1)
+
+    llm = load_model(
+        args.model_path,
+        n_ctx=args.n_ctx,
+        n_threads=args.n_threads,
+        n_batch=args.n_batch,
+    )
+    result = generate(llm, args.system_prompt, user_input, args.max_tokens)
+    print(result)

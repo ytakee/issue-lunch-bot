@@ -1,0 +1,147 @@
+# issue-lunch-bot
+
+GitHub Issueにお昼ご飯を提案してくれるBot。
+外部APIを一切使わず、GitHub Actions無料枠のCPU上でllama.cppベースのSLM（小規模言語モデル）を直接実行する。
+
+## 動作イメージ
+
+1. リポジトリにIssueを作成（例: 「今日は暑くて食欲がない」）
+2. GitHub Actionsが自動起動
+3. SLMがIssue内容を読み、お昼ご飯を提案
+4. 提案がIssueコメントとして投稿される
+
+Issueへのコメントでも再トリガーされる。
+
+## アーキテクチャ
+
+本プロジェクトの設計方針は**責務の明確な分離**にある。
+
+```
+┌─────────────────────────────────────────────────────┐
+│  GitHub Actions                                     │
+│                                                     │
+│  on-issue-event.yml (Caller)                        │
+│    ├─ Issue内容の取得                                │
+│    └─ run-slm-comment.yml (Reusable) を呼び出し     │
+│         ├─ モデルDL + キャッシュ                     │
+│         ├─ Python CLIに stdin でIssue本文を渡す      │
+│         └─ stdout の結果を gh issue comment で投稿   │
+│                                                     │
+│         ┌───────────────────────────┐                │
+│         │  Python (stdin → stdout)  │                │
+│         │  GitHub APIを一切知らない │                │
+│         └───────────────────────────┘                │
+└─────────────────────────────────────────────────────┘
+```
+
+- **Python**: モデルのロードと推論だけを担当する純粋なCLIツール
+- **GitHub Actions**: Issue内容の取得、コメント投稿などGitHub上の操作すべてを担当
+
+PythonがGitHub APIを知らないため、ローカルでの単体テストやCI上でのテストが容易になる。
+
+## ディレクトリ構成
+
+```
+issue-lunch-bot/
+├── .github/workflows/
+│   ├── on-issue-event.yml      # Caller: イベントトリガー
+│   ├── run-slm-comment.yml     # Reusable: モデルDL → 推論 → コメント投稿
+│   └── ci.yml                  # CI: lint + test
+├── src/
+│   ├── model.py                # モデルのロード・設定
+│   ├── inference.py            # プロンプト構築 + 推論実行
+│   └── main.py                 # CLIエントリポイント (stdin → stdout)
+├── tests/
+│   ├── test_inference.py
+│   └── test_main.py
+├── requirements.txt            # llama-cpp-python
+└── requirements-dev.txt        # pytest, ruff
+```
+
+## CPU高速化
+
+GitHub Actions無料ランナー（4 vCPU / 16GB RAM）で実用的な速度を出すための最適化を施している。
+
+### モデル側
+
+| 項目 | 値 | 理由 |
+|---|---|---|
+| 量子化 | Q2_K | モデルサイズ半減（約400MB）、メモリ帯域がボトルネックのCPU環境で有効 |
+| `n_ctx` | 512 | ランチ提案に長いコンテキストは不要。メモリ確保量を抑え初期化を高速化 |
+| `max_tokens` | 256 | 出力長を用途に合わせて絞り、生成時間を短縮 |
+
+### ランタイム側
+
+| 項目 | 値 | 理由 |
+|---|---|---|
+| `n_threads` | 4 | ランナーの4 vCPUをフル活用 |
+| `n_batch` | 512 | プロンプトの一括処理サイズを拡大し、prefillを高速化 |
+| `flash_attn` | true | アテンション計算のメモリ効率と速度を改善 |
+| `verbose` | false | モデル読み込み時のログ出力オーバーヘッドを削除 |
+
+### ビルド・インフラ側
+
+| 項目 | 内容 |
+|---|---|
+| `CMAKE_ARGS` | AVX2 / FMA / F16C を有効化。CPUのSIMD命令で行列演算を高速化 |
+| `actions/cache` | GGUFモデルをキャッシュし、2回目以降のダウンロードをスキップ |
+| uv | pip比10〜100倍速い依存解決でセットアップ時間を短縮 |
+
+## セットアップ
+
+### 1. リポジトリにファイルを配置
+
+本リポジトリの内容をそのままGitHubリポジトリにpushする。
+
+### 2. 動作確認
+
+Issueを作成すると、Actionsタブでワークフローが起動する。
+数分後、Issueにお昼ご飯の提案コメントが投稿される。
+
+追加の設定やシークレットは不要（`GITHUB_TOKEN` はActionsが自動で提供する）。
+
+## カスタマイズ
+
+### モデルを変更する
+
+`on-issue-event.yml` の `model_repo` / `model_file` を書き換える。
+HuggingFaceにあるGGUF形式のモデルであれば何でも使える。
+
+```yaml
+model_repo: "TheBloke/Mistral-7B-Instruct-v0.2-GGUF"
+model_file: "mistral-7b-instruct-v0.2.Q2_K.gguf"
+```
+
+### プロンプトを変更する
+
+`system_prompt` を書き換えるだけで用途を変えられる。
+
+### 複数のBotを並列実行する
+
+Reusable Workflowの設計により、jobsを増やすだけで異なるモデル・プロンプトを並列実行できる。
+
+```yaml
+jobs:
+  lunch:
+    uses: ./.github/workflows/run-slm-comment.yml
+    with:
+      system_prompt: "お昼ご飯を提案して"
+      # ...
+  dinner:
+    uses: ./.github/workflows/run-slm-comment.yml
+    with:
+      system_prompt: "夕飯を提案して"
+      model_repo: "別のモデル"
+      # ...
+```
+
+## 技術スタック
+
+| 技術 | 用途 |
+|---|---|
+| [llama-cpp-python](https://github.com/abetlen/llama-cpp-python) | GGUFモデルの推論 |
+| [TinyLlama 1.1B](https://huggingface.co/TheBloke/TinyLlama-1.1B-Chat-v1.0-GGUF) | デフォルトのSLM |
+| GitHub Actions | ワークフロー実行基盤 |
+| [uv](https://github.com/astral-sh/uv) | パッケージ管理 |
+| [ruff](https://github.com/astral-sh/ruff) | Lint / Format |
+| pytest | テスト |

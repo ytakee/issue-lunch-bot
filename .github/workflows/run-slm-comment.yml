@@ -1,0 +1,77 @@
+name: Run SLM and Comment
+
+on:
+  workflow_call:
+    inputs:
+      model_repo:
+        type: string
+        description: "HuggingFace repo (e.g. TheBloke/TinyLlama-1.1B-Chat-v1.0-GGUF)"
+      model_file:
+        type: string
+        description: "GGUFファイル名"
+      system_prompt:
+        type: string
+        description: "システムプロンプト"
+      issue_number:
+        type: number
+        description: "issue番号"
+      issue_body:
+        type: string
+        description: "issue本文（caller側で取得済み）"
+      max_tokens:
+        type: number
+        default: 256
+
+jobs:
+  run-slm:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v5
+
+      - name: Install dependencies
+        run: uv pip install --system -r requirements.txt
+        env:
+          CMAKE_ARGS: "-DGGML_AVX2=ON -DGGML_FMA=ON -DGGML_F16C=ON"
+
+      - name: Cache model
+        id: cache-model
+        uses: actions/cache@v4
+        with:
+          path: ./models
+          key: model-${{ inputs.model_repo }}-${{ inputs.model_file }}
+
+      - name: Download model from HuggingFace
+        if: steps.cache-model.outputs.cache-hit != 'true'
+        run: |
+          uv pip install --system huggingface-hub
+          huggingface-cli download ${{ inputs.model_repo }} ${{ inputs.model_file }} --local-dir ./models
+
+      - name: Run inference
+        id: inference
+        shell: bash
+        run: |
+          set -euo pipefail
+          DELIMITER=$(openssl rand -hex 16)
+          echo "comment<<$DELIMITER" >> $GITHUB_OUTPUT
+          echo "$ISSUE_BODY" | python -m src \
+            --model-path ./models/${{ inputs.model_file }} \
+            --system-prompt "$SYSTEM_PROMPT" \
+            --max-tokens ${{ inputs.max_tokens }} \
+            --n-threads 4 >> $GITHUB_OUTPUT
+          echo "$DELIMITER" >> $GITHUB_OUTPUT
+        env:
+          ISSUE_BODY: ${{ inputs.issue_body }}
+          SYSTEM_PROMPT: ${{ inputs.system_prompt }}
+
+      - name: Post comment to issue
+        run: |
+          echo "$COMMENT_BODY" | gh issue comment ${{ inputs.issue_number }} \
+            --repo ${{ github.repository }} \
+            --body-file -
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COMMENT_BODY: ${{ steps.inference.outputs.comment }}
