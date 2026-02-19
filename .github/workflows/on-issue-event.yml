@@ -6,6 +6,9 @@ on:
   issue_comment:
     types: [created]
 
+permissions:
+  issues: write
+
 jobs:
   lunch-suggestion:
     if: github.actor == github.repository_owner
