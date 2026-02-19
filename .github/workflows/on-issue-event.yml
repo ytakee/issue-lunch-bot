@@ -18,4 +18,4 @@ jobs:
         ユーザーのissue内容を読んで、気分に合ったお昼ご飯を1つ提案してください。
         提案は簡潔に、料理名と一言コメントで返してください。
       issue_number: ${{ github.event.issue.number }}
-      issue_body: ${{ github.event.issue.body || github.event.comment.body }}
+      issue_body: ${{ github.event.comment.body || github.event.issue.body }}
