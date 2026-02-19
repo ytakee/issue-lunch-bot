@@ -46,6 +46,7 @@ issue-lunch-bot/
 ├── .github/
 │   ├── ISSUE_TEMPLATE/
 │   │   └── lunch.yml               # Issueテンプレート（気分・予算を選択式で入力）
+│   ├── dependabot.yml              # 依存の自動更新（Actions + pip）
 │   └── workflows/
 │       ├── on-issue-event.yml      # Caller: イベントトリガー
 │       ├── run-slm-comment.yml     # Reusable: モデルDL → 推論 → コメント投稿
