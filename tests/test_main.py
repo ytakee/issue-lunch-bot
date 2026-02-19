@@ -57,3 +57,21 @@ def test_main_exits_on_empty_stdin():
     ):
         mock_stdin.read.return_value = ""
         main()
+
+
+def test_main_exits_on_whitespace_only_stdin():
+    test_args = [
+        "main.py",
+        "--model-path",
+        "./models/test.gguf",
+        "--system-prompt",
+        "テスト用プロンプト",
+    ]
+
+    with (
+        patch("sys.argv", test_args),
+        patch("sys.stdin") as mock_stdin,
+        pytest.raises(SystemExit, match="1"),
+    ):
+        mock_stdin.read.return_value = "  \n\t\n  "
+        main()

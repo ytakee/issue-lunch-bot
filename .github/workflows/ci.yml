@@ -7,6 +7,14 @@ on:
     branches: [main]
 
 jobs:
+  actionlint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run actionlint
+        uses: raven-actions/actionlint@v2
+
   lint:
     runs-on: ubuntu-latest
     steps:
