@@ -5,7 +5,7 @@ on:
     inputs:
       model_repo:
         type: string
-        description: "HuggingFace repo (e.g. TheBloke/TinyLlama-1.1B-Chat-v1.0-GGUF)"
+        description: "HuggingFace repo (e.g. Qwen/Qwen2.5-3B-Instruct-GGUF)"
       model_file:
         type: string
         description: "GGUFファイル名"

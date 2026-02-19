@@ -82,6 +82,7 @@ GitHub Actions無料ランナー（4 vCPU / 16GB RAM）で実用的な速度を�
 | `n_threads` | 4 | ランナーの4 vCPUをフル活用 |
 | `n_batch` | 512 | プロンプトの一括処理サイズを拡大し、prefillを高速化 |
 | `flash_attn` | true | アテンション計算のメモリ効率と速度を改善 |
+| `repeat_penalty` | 1.2 | 同じフレーズの繰り返しを抑制 |
 | `verbose` | false | モデル読み込み時のログ出力オーバーヘッドを削除 |
 
 ### ビルド・インフラ側
@@ -90,7 +91,7 @@ GitHub Actions無料ランナー（4 vCPU / 16GB RAM）で実用的な速度を�
 |---|---|
 | `CMAKE_ARGS` | AVX2 / FMA / F16C を有効化。CPUのSIMD命令で行列演算を高速化 |
 | `actions/cache` | GGUFモデルをキャッシュし、2回目以降のダウンロードをスキップ |
-| uv | pip比10〜100倍速い依存解決でセットアップ時間を短縮 |
+| uv (`enable-cache`) | pip比10〜100倍速い依存解決 + ビルド済みパッケージのキャッシュでセットアップ時間を短縮 |
 
 ## セットアップ
 
@@ -114,7 +115,7 @@ HuggingFaceにあるGGUF形式のモデルであれば何でも使える。
 
 ```yaml
 model_repo: "TheBloke/Mistral-7B-Instruct-v0.2-GGUF"
-model_file: "mistral-7b-instruct-v0.2.Q2_K.gguf"
+model_file: "mistral-7b-instruct-v0.2.Q4_K_M.gguf"
 ```
 
 ### プロンプトを変更する
@@ -149,4 +150,6 @@ jobs:
 | GitHub Actions | ワークフロー実行基盤 |
 | [uv](https://github.com/astral-sh/uv) | パッケージ管理 |
 | [ruff](https://github.com/astral-sh/ruff) | Lint / Format |
+| [actionlint](https://github.com/rhysd/actionlint) | ワークフローYAMLの静的解析 |
 | pytest | テスト |
+| [Dependabot](https://docs.github.com/ja/code-security/dependabot) | 依存の自動更新 |
