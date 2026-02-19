@@ -39,7 +39,9 @@ jobs:
         env:
           CMAKE_ARGS: "-DGGML_AVX2=ON -DGGML_FMA=ON -DGGML_F16C=ON"
 
-      - name: Cache model
+      # actions/cache はステップ実行時にキャッシュを復元し、
+      # キャッシュミス時はジョブ終了後の post step で自動的に保存する
+      - name: Restore model cache
         id: cache-model
         uses: actions/cache@v4
         with:
