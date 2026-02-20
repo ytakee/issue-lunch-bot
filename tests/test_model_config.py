@@ -26,9 +26,7 @@ def test_resolve_model_settings_overrides_model(tmp_path):
         encoding="utf-8",
     )
 
-    settings = resolve_model_settings(
-        "models/gemma-2-2b-it-Q4_K_M.gguf", str(config)
-    )
+    settings = resolve_model_settings("models/gemma-2-2b-it-Q4_K_M.gguf", str(config))
 
     assert settings.supports_system is False
     assert settings.chat_format == "gemma"
